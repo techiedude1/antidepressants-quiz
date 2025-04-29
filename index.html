@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antidepressant Quiz - NAPLEX Prep (Randomized 20 Qs)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for better visual appeal */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Light sky blue background */
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .question-block {
+            margin-bottom: 1.75rem;
+            padding: 1.5rem;
+            background-color: #f8fafc; /* Very light gray */
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6; /* Blue accent */
+        }
+         .question-number {
+            font-weight: 600;
+            color: #1d4ed8; /* Darker blue for question number */
+            margin-right: 0.5rem;
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease;
+            background-color: #fff;
+        }
+        .option-label:hover {
+            background-color: #ecfccb; /* Light lime on hover */
+            border-color: #84cc16; /* Lime border on hover */
+            transform: translateY(-2px);
+        }
+        input[type="radio"]:checked + .option-label {
+            background-color: #dbeafe; /* Light blue when selected */
+            border-color: #3b82f6; /* Blue border when selected */
+            font-weight: 500;
+        }
+        input[type="radio"] {
+            display: none; /* Hide the actual radio button */
+        }
+        .submit-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb; /* Blue */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: block; /* Make it block to center easily */
+            margin: 1.5rem auto 0; /* Center the button */
+        }
+        .submit-btn:hover {
+            background-color: #1d4ed8; /* Darker blue */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .password-input {
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .password-btn {
+            padding: 0.5rem 1rem;
+            background-color: #16a34a; /* Green */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .password-btn:hover {
+            background-color: #15803d; /* Darker green */
+        }
+        .result-correct {
+            color: #16a34a; /* Green */
+            font-weight: 600;
+        }
+        .result-incorrect {
+            color: #dc2626; /* Red */
+            font-weight: 600;
+        }
+        .explanation {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background-color: #fefce8; /* Light yellow */
+            border-left: 3px solid #eab308; /* Yellow */
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #713f12; /* Brownish text */
+        }
+        #password-error {
+            color: #dc2626; /* Red */
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div id="password-section" class="quiz-container text-center">
+        <h1 class="text-2xl font-bold mb-4 text-gray-700">Enter Password to Access Quiz</h1>
+        <input type="password" id="password-input" class="password-input mr-2" placeholder="Password">
+        <button id="password-submit" class="password-btn">Enter</button>
+        <p id="password-error" class="hidden">Incorrect Password.</p>
+    </div>
+
+    <div id="quiz-section" class="quiz-container hidden">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Antidepressant NAPLEX Prep Quiz (20 Questions)</h1>
+        <form id="quiz-form">
+            </form>
+        <button type="button" id="submit-quiz" class="submit-btn">Submit Quiz</button>
+    </div>
+
+    <div id="results-section" class="quiz-container hidden">
+        <h2 class="text-2xl font-bold mb-4 text-center text-blue-700">Quiz Results</h2>
+        <p id="score" class="text-xl font-semibold mb-6 text-center"></p>
+        <div id="incorrect-answers">
+            <h3 class="text-xl font-semibold mb-4 border-b pb-2 text-red-600">Review Incorrect Answers:</h3>
+            </div>
+         <div id="all-correct" class="hidden text-center py-4">
+             <p class="text-2xl font-bold text-green-600">Congratulations!</p>
+             <p class="text-lg text-gray-700">You answered all 20 questions correctly!</p>
+         </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const correctPassword = "PharmQuiz25"; // Set your desired password here
+        const numberOfQuestions = 20; // Number of questions to display
+        let currentQuizQuestions = []; // Holds the 20 questions for the current session
+
+        // --- Full Question Pool (Add more questions here!) ---
+        const allQuizData = [
+            // Original 5 Questions
+            {
+                id: "q1",
+                question: "A patient stabilized on phenelzine for depression presents to the pharmacy complaining of a severe headache, palpitations, and sweating after attending a wine and cheese party. Which of the following is the most likely cause of these symptoms?",
+                options: { a: "Serotonin syndrome", b: "Hypertensive crisis due to tyramine interaction", c: "Neuroleptic malignant syndrome", d: "Anticholinergic toxicity" },
+                correctAnswer: "b",
+                explanation: "Phenelzine is a Monoamine Oxidase Inhibitor (MAOI). Consuming tyramine-rich foods (like aged cheese and certain wines) while taking MAOIs prevents the breakdown of tyramine, leading to a buildup that can cause a dangerous hypertensive crisis."
+            },
+            {
+                id: "q2",
+                question: "Which of the following side effects is most commonly reported with Selective Serotonin Reuptake Inhibitors (SSRIs) like fluoxetine, particularly during the initial phase of treatment?",
+                options: { a: "Significant weight gain", b: "Hypertensive crisis", c: "Gastrointestinal disturbances (nausea, diarrhea)", d: "Sedation" },
+                correctAnswer: "c",
+                explanation: "Gastrointestinal side effects (nausea, vomiting, diarrhea) are very common when starting SSRIs due to increased serotonin activity in the gut. These often improve over time. While sedation or weight changes can occur, GI issues are typically the most frequent initial complaint."
+            },
+            {
+                id: "q3",
+                question: "Tricyclic antidepressants (TCAs) like amitriptyline carry a significant risk in overdose primarily due to which mechanism?",
+                options: { a: "Inhibition of dopamine reuptake", b: "Blockade of GABA receptors", c: "Cardiotoxicity due to sodium channel blockade", d: "Excessive serotonin agonism" },
+                correctAnswer: "c",
+                explanation: "TCAs block cardiac fast sodium channels. In overdose, this action can lead to slowed conduction (QRS widening on ECG), ventricular arrhythmias, and potentially fatal cardiovascular collapse. This cardiotoxicity is a major concern with TCA overdose."
+            },
+            {
+                id: "q4",
+                question: "Venlafaxine, an SNRI, is often used not only for depression but also for certain pain conditions like diabetic neuropathy. This additional benefit is thought to be related to its effect on which neurotransmitter system, particularly at higher doses?",
+                options: { a: "Dopamine", b: "Norepinephrine", c: "Acetylcholine", d: "GABA" },
+                correctAnswer: "b",
+                explanation: "Serotonin-Norepinephrine Reuptake Inhibitors (SNRIs) like venlafaxine inhibit the reuptake of both neurotransmitters. The inhibition of norepinephrine reuptake is believed to modulate descending pain pathways in the spinal cord, contributing to their efficacy in treating neuropathic pain. This effect is often more dose-dependent, becoming more prominent at higher venlafaxine doses."
+            },
+            {
+                id: "q5",
+                question: "Bupropion is an atypical antidepressant known for its unique mechanism and side effect profile compared to SSRIs. Which statement accurately describes bupropion?",
+                options: { a: "It primarily works by blocking serotonin reuptake and causes significant sexual dysfunction.", b: "It is a potent inhibitor of both norepinephrine and dopamine reuptake and has a lower risk of sexual side effects.", c: "It acts mainly as an antagonist at histamine H1 receptors, leading to significant sedation.", d: "It is an MAO inhibitor requiring dietary restrictions." },
+                correctAnswer: "b",
+                explanation: "Bupropion is a Norepinephrine-Dopamine Reuptake Inhibitor (NDRI). Unlike SSRIs, it lacks significant serotonergic activity and therefore has a much lower incidence of sexual side effects. It is not an MAOI and does not cause significant sedation (it can sometimes be activating). A key risk is lowering the seizure threshold."
+            },
+            // --- New Questions ---
+            {
+                id: "q6",
+                question: "Which antidepressant class requires a 14-day washout period before switching to an SSRI to avoid serotonin syndrome?",
+                options: { a: "SSRIs", b: "SNRIs", c: "TCAs", d: "MAOIs" },
+                correctAnswer: "d",
+                explanation: "Monoamine Oxidase Inhibitors (MAOIs) require a 14-day washout period when switching to or from most other antidepressants (especially serotonergic agents like SSRIs, SNRIs, TCAs) due to the high risk of potentially fatal serotonin syndrome. Fluoxetine requires an even longer washout (5 weeks) when switching *from* it *to* an MAOI due to its long half-life."
+            },
+            {
+                id: "q7",
+                question: "Mirtazapine is known for causing which prominent side effects, particularly at lower doses?",
+                options: { a: "Insomnia and agitation", b: "Sedation and increased appetite/weight gain", c: "Nausea and sexual dysfunction", d: "Hypertension and sweating" },
+                correctAnswer: "b",
+                explanation: "Mirtazapine is an alpha-2 antagonist and also blocks histamine H1 and serotonin 5-HT2/5-HT3 receptors. Its potent H1 blockade leads to significant sedation and appetite stimulation, often resulting in weight gain, especially noticeable at lower therapeutic doses (e.g., 7.5-15mg)."
+            },
+             {
+                id: "q8",
+                question: "Which SSRI has the longest half-life, requiring special consideration when switching medications or managing side effects?",
+                options: { a: "Sertraline", b: "Escitalopram", c: "Fluoxetine", d: "Paroxetine" },
+                correctAnswer: "c",
+                explanation: "Fluoxetine and its active metabolite, norfluoxetine, have very long half-lives (fluoxetine ~4-6 days, norfluoxetine ~4-16 days). This results in a prolonged time to reach steady-state and a very slow elimination, requiring a longer washout period (e.g., 5 weeks) before starting an MAOI."
+            },
+            {
+                id: "q9",
+                question: "A patient taking citalopram presents with confusion, hyperreflexia, myoclonus, fever, and diaphoresis after starting a new medication for migraines. Which condition is most likely?",
+                options: { a: "Anticholinergic crisis", b: "Neuroleptic Malignant Syndrome (NMS)", c: "Serotonin Syndrome", d: "Hypertensive crisis" },
+                correctAnswer: "c",
+                explanation: "This constellation of symptoms (autonomic instability, neuromuscular hyperactivity, altered mental status) is characteristic of Serotonin Syndrome, often triggered by combining serotonergic agents (like an SSRI and a triptan, or an SSRI and tramadol, MAOIs, linezolid, etc.)."
+            },
+            {
+                id: "q10",
+                question: "Which TCA is generally considered less anticholinergic and less sedating compared to amitriptyline or imipramine?",
+                options: { a: "Clomipramine", b: "Doxepin", c: "Nortriptyline", d: "Trimipramine" },
+                correctAnswer: "c",
+                explanation: "Nortriptyline (and desipramine) are secondary amine TCAs, which tend to have less potent anticholinergic, antihistaminic (sedating), and alpha-1 blocking (orthostasis) effects compared to tertiary amine TCAs like amitriptyline, imipramine, clomipramine, and doxepin."
+            },
+             {
+                id: "q11",
+                question: "What is the primary mechanism of action for Vilazodone (Viibryd)?",
+                options: { a: "SSRI and 5-HT1A partial agonist", b: "SNRI", c: "NDRI", d: "MAOI" },
+                correctAnswer: "a",
+                explanation: "Vilazodone is unique in that it combines selective serotonin reuptake inhibition (SSRI activity) with partial agonism at the serotonin 5-HT1A receptor."
+            },
+            {
+                id: "q12",
+                question: "Which antidepressant carries a specific warning regarding dose-dependent increases in blood pressure?",
+                options: { a: "Escitalopram", b: "Bupropion", c: "Venlafaxine", d: "Mirtazapine" },
+                correctAnswer: "c",
+                explanation: "Venlafaxine, due to its norepinephrine reuptake inhibition (which becomes more pronounced at higher doses), can cause dose-related increases in diastolic blood pressure. Monitoring blood pressure is important, especially at doses above 150-225 mg/day."
+            },
+             {
+                id: "q13",
+                question: "Paroxetine is known to be a potent inhibitor of which cytochrome P450 enzyme, leading to numerous potential drug interactions?",
+                options: { a: "CYP1A2", b: "CYP2C9", c: "CYP2D6", d: "CYP3A4" },
+                correctAnswer: "c",
+                explanation: "Paroxetine (and fluoxetine) are potent inhibitors of CYP2D6. This can significantly increase the concentration of drugs metabolized by this enzyme, such as certain beta-blockers (metoprolol), antiarrhythmics (flecainide), TCAs, and antipsychotics (risperidone)."
+            },
+            {
+                id: "q14",
+                question: "Which antidepressant is also FDA-approved for smoking cessation?",
+                options: { a: "Sertraline", b: "Venlafaxine", c: "Bupropion SR", d: "Trazodone" },
+                correctAnswer: "c",
+                explanation: "Bupropion Sustained-Release (SR), marketed as Zyban, is FDA-approved as an aid for smoking cessation. Its mechanism in this context is thought to involve its dopaminergic and noradrenergic activity, reducing nicotine withdrawal symptoms and cravings."
+            },
+            {
+                id: "q15",
+                question: "Trazodone is often used off-label at low doses primarily for which condition?",
+                options: { a: "Neuropathic pain", b: "Anxiety", c: "Insomnia", d: "ADHD" },
+                correctAnswer: "c",
+                explanation: "Trazodone possesses significant antihistaminic (H1 blockade) and alpha-1 adrenergic blocking properties, leading to sedation. While used at higher doses for depression, lower doses (e.g., 25-100mg) are commonly used off-label to treat insomnia due to these sedative effects."
+            },
+            {
+                id: "q16",
+                question: "Which class of antidepressants has the highest risk of sexual dysfunction (e.g., anorgasmia, decreased libido)?",
+                options: { a: "MAOIs", b: "TCAs", c: "SSRIs/SNRIs", d: "Atypical Antidepressants (Bupropion, Mirtazapine)" },
+                correctAnswer: "c",
+                explanation: "SSRIs and SNRIs are most commonly associated with sexual side effects due to their potent effects on serotonin. Bupropion and mirtazapine generally have a lower risk."
+            },
+            {
+                id: "q17",
+                question: "A patient taking an SSRI develops hyponatremia. This adverse effect is most commonly associated with which mechanism?",
+                options: { a: "Drug-induced diabetes insipidus", b: "Syndrome of Inappropriate Antidiuretic Hormone (SIADH)", c: "Direct renal toxicity", d: "Inhibition of aldosterone" },
+                correctAnswer: "b",
+                explanation: "SSRIs (and some other antidepressants) can cause SIADH, leading to excessive water retention and dilution of sodium in the blood (hyponatremia). This risk is higher in elderly patients."
+            },
+             {
+                id: "q18",
+                question: "Which antidepressant is structurally related to amphetamine and should be used cautiously in patients with a history of eating disorders or seizure disorders?",
+                options: { a: "Fluoxetine", b: "Sertraline", c: "Bupropion", d: "Venlafaxine" },
+                correctAnswer: "c",
+                explanation: "Bupropion has an aminoketone structure somewhat similar to stimulants. It lowers the seizure threshold in a dose-dependent manner and is contraindicated in patients with seizure disorders or current/prior diagnoses of bulimia or anorexia nervosa due to an increased risk of seizures observed in these populations during clinical trials."
+            },
+            {
+                id: "q19",
+                question: "Duloxetine (Cymbalta) has FDA approval for treating major depressive disorder as well as which other conditions?",
+                options: { a: "Smoking cessation and ADHD", b: "Generalized anxiety disorder, fibromyalgia, and diabetic peripheral neuropathic pain", c: "Panic disorder and obsessive-compulsive disorder", d: "Insomnia and PTSD" },
+                correctAnswer: "b",
+                explanation: "Duloxetine, an SNRI, has a broad range of indications including MDD, GAD, fibromyalgia, diabetic peripheral neuropathic pain, and chronic musculoskeletal pain, leveraging both its serotonin and norepinephrine reuptake inhibition."
+            },
+            {
+                id: "q20",
+                question: "What is a key counseling point for patients starting an SSRI regarding the onset of therapeutic effect for depression?",
+                options: { a: "Full effects are usually seen within 3-5 days.", b: "Improvement in sleep and energy may occur first, but mood improvement may take 4-8 weeks.", c: "The medication works immediately for mood.", d: "Side effects indicate the drug is starting to work on mood." },
+                correctAnswer: "b",
+                explanation: "Patients should be counseled that while some initial effects (like on sleep or energy, or side effects) might appear sooner, the full antidepressant effect on mood typically takes several weeks (often 4-8 weeks or longer) to become apparent. Managing expectations is crucial for adherence."
+            },
+            {
+                id: "q21",
+                question: "Which medication is a tetracyclic antidepressant primarily acting via antagonism of alpha-2, H1, and 5-HT2/3 receptors?",
+                options: { a: "Amitriptyline", b: "Bupropion", c: "Mirtazapine", d: "Sertraline" },
+                correctAnswer: "c",
+                explanation: "Mirtazapine is classified as a tetracyclic antidepressant and exerts its effects through potent antagonism of central presynaptic alpha-2 adrenergic autoreceptors (increasing NE and 5-HT release), histamine H1 receptors (sedation, appetite), and serotonin 5-HT2 and 5-HT3 receptors."
+            },
+            {
+                id: "q22",
+                question: "Selegiline is available as a transdermal patch (Emsam) for depression. What is a potential advantage of the transdermal route for this MAOI?",
+                options: { a: "It completely eliminates the risk of serotonin syndrome.", b: "At the lowest strength (6mg/24hr), dietary tyramine restrictions are generally not needed.", c: "It causes less sedation than oral MAOIs.", d: "It has a faster onset of action than oral formulations." },
+                correctAnswer: "b",
+                explanation: "Transdermal selegiline bypasses first-pass metabolism in the gut and liver, where MAO-A (responsible for breaking down tyramine) is highly concentrated. At the lowest dose (6 mg/24 hours), inhibition of gut MAO-A is minimal, thus reducing the risk of tyramine-induced hypertensive crisis, and dietary restrictions are typically not required. Restrictions *are* needed at higher patch strengths (9mg, 12mg)."
+            },
+            {
+                id: "q23",
+                question: "Which of the following requires hepatic dose adjustment due to extensive liver metabolism and potential hepatotoxicity (rare but serious)?",
+                options: { a: "Escitalopram", b: "Nefazodone", c: "Bupropion", d: "Sertraline" },
+                correctAnswer: "b",
+                explanation: "Nefazodone carries a Black Box Warning for rare but potentially life-threatening liver failure (hepatotoxicity). Its use has significantly declined due to this risk, and careful liver function monitoring is required if prescribed. It is also extensively metabolized by the liver (CYP3A4)."
+            },
+             {
+                id: "q24",
+                question: "Which antidepressant is often associated with QTc prolongation risk, requiring ECG monitoring especially at higher doses or with risk factors?",
+                options: { a: "Bupropion", b: "Mirtazapine", c: "Citalopram", d: "Sertraline" },
+                correctAnswer: "c",
+                explanation: "Citalopram carries a warning regarding dose-dependent QTc interval prolongation. Doses above 40 mg/day are generally not recommended (or 20 mg/day in patients >60 years, hepatic impairment, or CYP2C19 poor metabolizers) due to this risk."
+            },
+             {
+                id: "q25",
+                question: "Vortioxetine (Trintellix) has a multimodal mechanism involving SSRI activity plus modulation of several serotonin receptors. Which side effect is notably common with this agent compared to some other SSRIs?",
+                options: { a: "Significant weight gain", b: "Severe sedation", c: "Nausea", d: "Hypertension" },
+                correctAnswer: "c",
+                explanation: "Nausea is a very common side effect associated with vortioxetine, often reported more frequently than with some other SSRIs/SNRIs, particularly during initiation. Taking it with food may help mitigate this."
+            },
+            {
+                id: "q26",
+                question: "Which TCA is most commonly used for Obsessive-Compulsive Disorder (OCD) due to its potent serotonin reuptake inhibition?",
+                options: { a: "Nortriptyline", b: "Amitriptyline", c: "Clomipramine", d: "Desipramine" },
+                correctAnswer: "c",
+                explanation: "Clomipramine is a TCA that, despite being less selective than SSRIs, is the most serotonergic TCA and is FDA-approved and effective for treating OCD. However, it carries the typical TCA side effect burden."
+            },
+             {
+                id: "q27",
+                question: "Discontinuation syndrome (e.g., dizziness, nausea, 'brain zaps') is generally more common and severe with antidepressants that have:",
+                options: { a: "A long half-life", b: "A short half-life", c: "Primarily dopaminergic action", d: "Significant anticholinergic effects" },
+                correctAnswer: "b",
+                explanation: "Antidepressants with shorter half-lives (like paroxetine, venlafaxine) are eliminated more quickly from the body when stopped abruptly, leading to a more rapid drop in neurotransmitter levels and a higher likelihood/severity of discontinuation symptoms compared to drugs with longer half-lives (like fluoxetine)."
+            },
+            {
+                id: "q28",
+                question: "Which antidepressant should generally be avoided in patients with uncontrolled narrow-angle glaucoma?",
+                options: { a: "Sertraline", b: "Bupropion", c: "Amitriptyline", d: "Mirtazapine" },
+                correctAnswer: "c",
+                explanation: "Antidepressants with significant anticholinergic properties, such as TCAs (especially tertiary amines like amitriptyline), can cause mydriasis (pupil dilation), which can precipitate an acute angle-closure glaucoma attack in susceptible individuals with narrow angles. Use requires caution or avoidance."
+            },
+             {
+                id: "q29",
+                question: "Levomilnacipran (Fetzima) is an SNRI that differs from venlafaxine and duloxetine in what way regarding its reuptake inhibition?",
+                options: { a: "It is more potent for serotonin than norepinephrine reuptake.", b: "It is more potent for norepinephrine than serotonin reuptake.", c: "It also significantly inhibits dopamine reuptake.", d: "It has no effect on serotonin reuptake." },
+                correctAnswer: "b",
+                explanation: "Levomilnacipran is an SNRI that exhibits greater potency for norepinephrine reuptake inhibition compared to serotonin reuptake inhibition (approximately a 2:1 ratio for NE:5-HT), distinguishing it from venlafaxine and duloxetine which tend to be more potent for serotonin or have more balanced effects."
+            },
+             {
+                id: "q30",
+                question: "What is the primary proposed mechanism contributing to the antidepressant effect of Esketamine nasal spray (Spravato)?",
+                options: { a: "Mu-opioid receptor agonism", b: "NMDA receptor antagonism", c: "Dopamine D2 receptor blockade", d: "Selective serotonin reuptake inhibition" },
+                correctAnswer: "b",
+                explanation: "Esketamine, the S-enantiomer of ketamine, is thought to exert its rapid antidepressant effects primarily through non-competitive antagonism of the N-methyl-D-aspartate (NMDA) receptor, leading to downstream effects on glutamate signaling and synaptic plasticity."
+            }
+            // Add more questions as needed...
+        ];
+
+        // --- DOM Elements ---
+        const passwordSection = document.getElementById('password-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+        const passwordInput = document.getElementById('password-input');
+        const passwordSubmitBtn = document.getElementById('password-submit');
+        const passwordError = document.getElementById('password-error');
+        const quizForm = document.getElementById('quiz-form');
+        const submitQuizBtn = document.getElementById('submit-quiz');
+        const scoreEl = document.getElementById('score');
+        const incorrectAnswersEl = document.getElementById('incorrect-answers');
+        const allCorrectEl = document.getElementById('all-correct');
+
+        // --- Functions ---
+
+        // Function to shuffle an array (Fisher-Yates Algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+
+        // Function to select and display quiz questions
+        function displayQuiz() {
+            // Shuffle the main pool and select the desired number of questions
+            currentQuizQuestions = shuffleArray([...allQuizData]).slice(0, numberOfQuestions);
+
+            quizForm.innerHTML = ''; // Clear previous questions if any
+
+            currentQuizQuestions.forEach((q, index) => {
+                const questionNumber = index + 1;
+                // Use the unique ID from the question object for the name attribute
+                const questionIdName = q.id;
+
+                // Create question block
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+
+                // Create question text (including the question number)
+                const questionText = document.createElement('p');
+                questionText.className = 'text-lg font-semibold mb-4';
+                // Add question number visually
+                questionText.innerHTML = `<span class="question-number">${questionNumber}.</span> ${q.question}`;
+                questionBlock.appendChild(questionText);
+
+
+                // Create options container
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'space-y-2';
+
+                // Create radio buttons for options
+                for (const key in q.options) {
+                    // Ensure unique IDs for labels and inputs across the whole page
+                    const optionId = `${questionIdName}_${key}`;
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.id = optionId;
+                    radioInput.name = questionIdName; // Group radio buttons by unique question ID
+                    radioInput.value = key;
+
+                    const optionLabel = document.createElement('label');
+                    optionLabel.htmlFor = optionId;
+                    optionLabel.className = 'option-label';
+                    optionLabel.textContent = `(${key.toUpperCase()}) ${q.options[key]}`;
+
+                    optionsDiv.appendChild(radioInput);
+                    optionsDiv.appendChild(optionLabel);
+                }
+
+                questionBlock.appendChild(optionsDiv);
+                quizForm.appendChild(questionBlock);
+            });
+        }
+
+        // Function to check password
+        function checkPassword() {
+            if (passwordInput.value === correctPassword) {
+                passwordSection.classList.add('hidden');
+                quizSection.classList.remove('hidden');
+                resultsSection.classList.add('hidden'); // Ensure results are hidden initially
+                passwordError.classList.add('hidden');
+                displayQuiz(); // Display randomized quiz only after correct password
+            } else {
+                passwordError.classList.remove('hidden');
+                passwordInput.focus(); // Keep focus on input if wrong
+            }
+        }
+
+        // Function to calculate and display results
+        function showResults() {
+            let score = 0;
+            const incorrectAnswers = [];
+
+            // Grade based on the currently displayed questions
+            currentQuizQuestions.forEach((q, index) => {
+                const questionIdName = q.id; // Use the unique ID
+                const selectedOption = quizForm.querySelector(`input[name="${questionIdName}"]:checked`);
+
+                if (selectedOption) {
+                    if (selectedOption.value === q.correctAnswer) {
+                        score++;
+                    } else {
+                        // Store details of incorrect answers
+                        incorrectAnswers.push({
+                            question: q.question, // Use the original question text
+                            userAnswer: `(${selectedOption.value.toUpperCase()}) ${q.options[selectedOption.value]}`,
+                            correctAnswer: `(${q.correctAnswer.toUpperCase()}) ${q.options[q.correctAnswer]}`,
+                            explanation: q.explanation,
+                            questionNumber: index + 1 // Store the number it appeared as in this quiz
+                        });
+                    }
+                } else {
+                    // Handle unanswered questions (counting as incorrect)
+                     incorrectAnswers.push({
+                            question: q.question,
+                            userAnswer: "No answer selected",
+                            correctAnswer: `(${q.correctAnswer.toUpperCase()}) ${q.options[q.correctAnswer]}`,
+                            explanation: q.explanation,
+                            questionNumber: index + 1 // Store the number it appeared as in this quiz
+                        });
+                }
+            });
+
+            // Calculate percentage based on the number of questions shown
+            const percentage = Math.round((score / numberOfQuestions) * 100);
+            scoreEl.textContent = `Your Score: ${score} out of ${numberOfQuestions} (${percentage}%)`;
+
+            // Apply color based on score
+             if (percentage >= 80) {
+                scoreEl.className = 'text-xl font-semibold mb-6 text-center text-green-600'; // Green for good score
+            } else if (percentage >= 60) {
+                scoreEl.className = 'text-xl font-semibold mb-6 text-center text-yellow-600'; // Yellow for medium score
+            } else {
+                scoreEl.className = 'text-xl font-semibold mb-6 text-center text-red-600'; // Red for low score
+            }
+
+
+            // Display incorrect answers
+            incorrectAnswersEl.innerHTML = '<h3 class="text-xl font-semibold mb-4 border-b pb-2 text-red-600">Review Incorrect Answers:</h3>'; // Reset previous results
+            if (incorrectAnswers.length > 0) {
+                 allCorrectEl.classList.add('hidden'); // Hide congratulations message
+                 incorrectAnswersEl.classList.remove('hidden'); // Show incorrect section
+
+                 // Sort incorrect answers by the question number they appeared as
+                 incorrectAnswers.sort((a, b) => a.questionNumber - b.questionNumber);
+
+                incorrectAnswers.forEach(item => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'mb-6 p-4 border border-gray-200 rounded-lg bg-white shadow-sm';
+                    resultDiv.innerHTML = `
+                        <p class="font-medium text-gray-800 mb-2"><span class="question-number">${item.questionNumber}.</span> ${item.question}</p>
+                        <p><span class="font-semibold">Your Answer:</span> <span class="result-incorrect">${item.userAnswer}</span></p>
+                        <p><span class="font-semibold">Correct Answer:</span> <span class="result-correct">${item.correctAnswer}</span></p>
+                        <div class="explanation">${item.explanation}</div>
+                    `;
+                    incorrectAnswersEl.appendChild(resultDiv);
+                });
+            } else {
+                // If all answers are correct
+                incorrectAnswersEl.classList.add('hidden'); // Hide the incorrect answers section
+                allCorrectEl.classList.remove('hidden'); // Show the congratulations message
+            }
+
+
+            // Hide quiz and show results
+            quizSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+        }
+
+        // --- Event Listeners ---
+        passwordSubmitBtn.addEventListener('click', checkPassword);
+        // Allow pressing Enter in password field
+        passwordInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission if it were in a form
+                checkPassword();
+            }
+        });
+
+        submitQuizBtn.addEventListener('click', showResults);
+
+    </script>
+
+</body>
+</html>
